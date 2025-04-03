@@ -1,24 +1,25 @@
 # EMG Signal Processing Logic
+# Version: 1.1
 # Author: Abhishek Tyagi
-# Description: Filters raw EMG signal and detects activation threshold
+# Description: Filters raw EMG signal, extracts envelope, and detects activation threshold (MUAP aligned)
 
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import butter, filtfilt
 
 # --- Configuration ---
-EMG_THRESHOLD = 0.5  # Adjust based on your signal
-SAMPLE_RATE = 1000   # Hz
-HIGH_PASS = 20       # Hz
-LOW_PASS = 450       # Hz
+SAMPLE_RATE = 1000     # Hz
+HIGH_PASS = 20         # Hz (removes motion artifacts)
+LOW_PASS = 450         # Hz (removes noise beyond muscle activation band)
+EMG_THRESHOLD = 0.5    # Detection threshold for activation
 
-# --- Load EMG data ---
-# Replace this with actual CSV input
+# --- Synthetic EMG for Testing ---
 time = np.linspace(0, 2, 2 * SAMPLE_RATE)
-raw_signal = np.sin(2 * np.pi * 50 * time) + 0.5 * np.random.randn(len(time))  # synthetic EMG-like signal
+raw_signal = np.sin(2 * np.pi * 50 * time) + 0.5 * np.random.randn(len(time))
 
 # --- Filter Design ---
 def bandpass_filter(signal, lowcut, highcut, fs, order=2):
+    """Applies Butterworth bandpass filter."""
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
@@ -27,29 +28,34 @@ def bandpass_filter(signal, lowcut, highcut, fs, order=2):
 
 # --- Full-Wave Rectification ---
 def rectify(signal):
+    """Applies full-wave rectification."""
     return np.abs(signal)
 
-# --- Envelope Detection ---
+# --- Envelope Extraction ---
 def envelope(signal, window_size=50):
+    """Extracts EMG envelope using moving average (low-pass equivalent)."""
     return np.convolve(signal, np.ones(window_size)/window_size, mode='same')
+
+# --- Activation Detection ---
+def detect_activation(smoothed_signal, threshold):
+    """Detects regions where EMG exceeds the threshold."""
+    return smoothed_signal > threshold
 
 # --- Processing Pipeline ---
 filtered = bandpass_filter(raw_signal, HIGH_PASS, LOW_PASS, SAMPLE_RATE)
 rectified = rectify(filtered)
 smoothed = envelope(rectified)
+activation = detect_activation(smoothed, EMG_THRESHOLD)
 
-# --- Thresholding ---
-activation = smoothed > EMG_THRESHOLD
-
-# --- Plot ---
+# --- Plotting ---
 plt.figure(figsize=(10, 4))
-plt.plot(time, raw_signal, label="Raw EMG")
+plt.plot(time, raw_signal, label="Raw EMG", alpha=0.6)
 plt.plot(time, smoothed, label="Smoothed Envelope", linewidth=2)
 plt.fill_between(time, 0, 1, where=activation, alpha=0.2, color='red', label="Activation")
 plt.xlabel("Time (s)")
-plt.ylabel("EMG Signal")
+plt.ylabel("Signal Amplitude")
+plt.title("EMG Signal Processing with MUAP Activation Detection")
 plt.legend()
-plt.title("EMG Signal Processing")
-plt.grid()
+plt.grid(True)
 plt.tight_layout()
 plt.show()
