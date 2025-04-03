@@ -17,11 +17,23 @@ This data can be used to:
 - Train and evaluate signal classification models
 - Simulate EMG-driven actuator control in the exoskeleton
 
-## 📷 Associated Visualizations
+# 🖼 EMG Signal Visualizations
 
-Visuals from this dataset are saved in the `data` folder:
+This folder contains key visualizations derived from processed EMG data.
 
-- `emg_plot_raw.png` – Raw EMG waveform  
-- `emg_plot_filtered.png` – Bandpass filtered EMG  
-- `emg_plot_envelope.png` – Smoothed signal + activation zones
+## 📷 Image Previews
+
+### 1. Raw EMG Signal
+![Raw EMG](./emg_plot_raw.png)
+
+### 2. Bandpass Filtered EMG
+![Filtered EMG](./emg_plot_filtered.png)
+
+### 3. Smoothed Envelope with Activation Threshold
+![Smoothed Envelope](./emg_plot_envelope.png)
+
+---
+
+These images are generated using signal processing scripts provided in `firmware/signal_processing/` and correspond to the dataset located in `data/emg_processed_data.csv`.
+
 
