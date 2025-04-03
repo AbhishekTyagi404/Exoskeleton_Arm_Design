@@ -19,7 +19,7 @@ This data can be used to:
 
 ## 📷 Associated Visualizations
 
-Visuals from this dataset are saved in the `images/` folder:
+Visuals from this dataset are saved in the `data` folder:
 
 - `emg_plot_raw.png` – Raw EMG waveform  
 - `emg_plot_filtered.png` – Bandpass filtered EMG  
